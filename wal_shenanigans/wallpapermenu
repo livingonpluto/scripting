@@ -9,16 +9,16 @@ SCRIPT=~/scripting/wal_shenanigans/pywal16.sh # script to run after wal for refr
 menu () {
 		if command -v nsxiv >/dev/null; then 
 			CHOICE=$(nsxiv -otb $FOLDER/*)
-
-			case $CHOICE in
-			*.*) wal -i "$CHOICE" -o $SCRIPT ;;
-			*) exit 0 ;;
-			esac
 		else 
 				echo "pls install nsxiv to use this script"
 				exit 1
 		fi
-
+		
+		if [[ -f "$CHOICE" ]]; then 
+			wal -i "$CHOICE" -o $SCRIPT
+		else 
+			exit 0
+		fi
 
 }
 
