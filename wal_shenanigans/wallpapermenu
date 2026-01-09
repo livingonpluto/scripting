@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+# slightly scuffed wallpaper picker menu for use with pywal - uses nsxiv if installed, otherwise uses dmenu
+
+FOLDER=~/scripting/assets/pics # wallpaper folder
+SCRIPT=~/scripting/wal_shenanigans/pywal16.sh # script to run after wal for refreshing programs, etc.
+
+
+menu () {
+		if command -v nsxiv >/dev/null; then 
+			CHOICE=$(nsxiv -otb $FOLDER/*)
+
+			case $CHOICE in
+			*.*) wal -i "$CHOICE" -o $SCRIPT ;;
+			*) exit 0 ;;
+			esac
+		else 
+				echo "pls install nsxiv to use this script"
+				exit 1
+		fi
+
+
+}
+
+# If given arguments:
+# First argument will be used by pywal as wallpaper/dir path
+# Second will be used as theme (use wal --theme to view built-in themes)
+
+case "$#" in
+		0) menu ;;
+		1) wal -i "$1" -o $SCRIPT ;;
+		2) wal -i "$1" --theme $2 -o $SCRIPT ;;
+		*) exit 0 ;;
+esac
