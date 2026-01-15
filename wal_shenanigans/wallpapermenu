@@ -2,21 +2,45 @@
 
 # slightly scuffed wallpaper picker menu for use with pywal - uses nsxiv if installed, otherwise uses dmenu
 
-FOLDER=~/scripting/assets/pics # wallpaper folder
-SCRIPT=~/scripting/wal_shenanigans/pywal16.sh # script to run after wal for refreshing programs, etc.
+FOLDER=~/Stuff/scripting/assets/pics # wallpaper folder
+SCRIPT=~/Stuff/scripting/wal_shenanigans/pywal16.sh # script to run after wal for refreshing programs, etc.
+LOGFILE=~/Stuff/scripting/wal_shenanigans/log.log
+
+: > "$LOGFILE" 
+
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOGFILE"
+}
+
+
+
+
 
 
 menu () {
 		if command -v nsxiv >/dev/null; then 
+			log "Opening wallpaper menu."
 			CHOICE=$(nsxiv -otb $FOLDER/*)
 		else 
-				echo "pls install nsxiv to use this script"
+				log "nsxiv not installed. Exiting."
 				exit 1
 		fi
 		
 		if [[ -f "$CHOICE" ]]; then 
-			wal -i "$CHOICE" -o $SCRIPT
+
+			if command -v wal >/dev/null; then
+				wal -i "$CHOICE" -o "$SCRIPT" >> "$LOGFILE" 2>&1
+			elif command -v /home/imblute/.local/bin/wal >/dev/null; then
+				/home/imblute/.local/bin/wal -i "$CHOICE" -o "$SCRIPT" >> "$LOGFILE" 2>&1
+			else
+				log "wal is not installed. Please install it to use this script."
+				exit 1
+			fi
+			current_wallpaper=$(gsettings get org.gnome.desktop.background picture-uri)
+			log "Current wallpaper is: $current_wallpaper"
+
 		else 
+			log "No valid file chosen. Exiting."
 			exit 0
 		fi
 
